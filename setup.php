@@ -1,5 +1,5 @@
 <?php
-require_once 'login.php';
+require_once 'database_details.php';
 
 echo 'создаем базу/таблицы<br/>';
 $dbhandle = mysql_connect($hostname, $username, $password)
