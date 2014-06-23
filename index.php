@@ -1,6 +1,26 @@
 <?php
+require_once 'database_details.php';
+if (isset($_POST['login'])) $login = $_POST['login'];
+if (isset($_POST['pass'])) $pass = $_POST['pass'];
+$dbhandle = mysql_connect($hostname, $username, $password)
+  or die('не могу подключиться к mySQl: '. mysql_error());
+mysql_select_db ($dbname) or die("Не могу выбрать БД $dbname: " . mysql_error());
 
-?>
+if (isset($_POST['login'])){
+$login = $_POST["login"];
+$pass = $_POST["pass"];
+$query = "SELECT login,password FROM Users WHERE login='$login' AND password='$pass'";
+$result = mysql_query($query);
+if (!$result) die('не могу подключиться к mySQl: '. mysql_error());
+$rows = mysql_num_rows($result);
+if ($rows == 1){
+session_start();
+$_SESSION['user'] = $login;
+die(header("location:personal.php"));
+}
+}
+
+echo <<<_END
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,3 +38,12 @@
 </form>
 </body>
 </html>
+_END;
+$query = "SELECT * FROM Posts";
+$result = mysql_query($query);
+if (!$result) die('не могу подключиться к mySQl: '. mysql_error());
+while($data=mysql_fetch_array($result))
+{
+    echo $data['login']." : ".$data['usrpost']."<br />";
+}
+?>

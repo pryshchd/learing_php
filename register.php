@@ -1,24 +1,21 @@
 <?php
 require_once 'database_details.php';
 if (isset($_POST['login'])) $login = $_POST['login'];
-else $login = "NULL";
 if (isset($_POST['pass'])) $pass = $_POST['pass'];
-else $pass = "NULL";
-
 $dbhandle = mysql_connect($hostname, $username, $password)
-  or die('не могу подключиться к mySQl'. mysql_error());
- $dbname = 'first_php_my_db';
+  or die('не могу подключиться к mySQl: '. mysql_error());
 mysql_select_db ($dbname) or die("Не могу выбрать БД $dbname: " . mysql_error());
 
-$query = "SELECT * FROM members WHERE login='$login'";
+$query = "SELECT * FROM Users WHERE login='$login'";
 $result = mysql_query($query);
-if ((mysql_num_rows($result)) != 0) echo "Имя пользователя существует<br />";
-else {
-	$query = "INSERT INTO members VALUES('$login', '$pass')";
-	$result = mysql_query($query);
-	die("<h4>пользователь зарегистрирован</h4><br />");
-}
-
+if (!$result) die('не могу подключиться к mySQl: '. mysql_error());
+$rows = mysql_num_rows($result);
+	if ($rows != 0) echo ("Имя пользователя ". $login ." существует<br />");
+		else {
+			$query = "INSERT INTO Users VALUES('$login', '$pass')";
+			$result = mysql_query($query);
+	die(header("Location: thanks_for_registering.php"));
+			}
 echo <<<_END
 <!DOCTYPE html>
 <html>
@@ -29,11 +26,11 @@ echo <<<_END
 <body>
     <h1>Регистрация</h1>
     <form method="post" action="register.php">
-    	<p>введите логин и пароль для регистрации нового пользователя</p>
-    	<p>логин <input type="text" name="login"/></p>
-    	<p>пароль <input type="text" name="pass"/></p>
-    	<p><input type="submit" value ="зарегистрироваться"/></p>		
-		
+        <p>введите логин и пароль для регистрации нового пользователя</p>
+        <p>логин <input type="text" name="login"/></p>
+        <p>пароль <input type="text" name="pass"/></p>
+        <p><input type="submit" value ="зарегистрироваться"/></p>       
+        
 </form>
 </body>
 </html>
