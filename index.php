@@ -8,8 +8,10 @@ mysql_select_db ($dbname) or die("Не могу выбрать БД $dbname: " .
 
 if (isset($_POST['login'])){
 $login = $_POST["login"];
+$preppedlogin = mysql_real_escape_string($login);
 $pass = $_POST["pass"];
-$query = "SELECT login,password FROM Users WHERE login='$login' AND password='$pass'";
+$hashedpass = crypt($pass, $salt);
+$query = "SELECT login,password FROM Users WHERE login='$preppedlogin' AND password='$hashedpass'";
 $result = mysql_query($query);
 if (!$result) die('не могу подключиться к mySQl: '. mysql_error());
 $rows = mysql_num_rows($result);

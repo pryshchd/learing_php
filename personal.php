@@ -10,6 +10,7 @@ mysql_select_db ($dbname) or die("Не могу выбрать БД $dbname: " .
 
 if ($usrpost != "дефолтное значение")
 {
+$usrpost = strip_tags($usrpost);
 $query = "INSERT INTO Posts VALUES (NULL,'$user','$usrpost')";
 $result = mysql_query($query);
 if (!$result) die('не могу подключиться к mySQl при добавлении поста: '. mysql_error());
@@ -31,5 +32,5 @@ echo <<<_END
 </body>
 </html>
 _END;
-echo "Добавлено: " . $usrpost;
+if ($usrpost != "дефолтное значение") echo "Добавлено: " . $usrpost;
 ?>

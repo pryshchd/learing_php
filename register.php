@@ -1,21 +1,27 @@
 <?php
 require_once 'database_details.php';
+$login = $pass = "дефолтное значение";
 if (isset($_POST['login'])) $login = $_POST['login'];
 if (isset($_POST['pass'])) $pass = $_POST['pass'];
-$dbhandle = mysql_connect($hostname, $username, $password)
+
+if ($login != "дефолтное значение" and $pass != "дефолтное значение")
+  {
+    $dbhandle = mysql_connect($hostname, $username, $password)
   or die('не могу подключиться к mySQl: '. mysql_error());
 mysql_select_db ($dbname) or die("Не могу выбрать БД $dbname: " . mysql_error());
-
+$preppedlogin = mysql_real_escape_string($login);
 $query = "SELECT * FROM Users WHERE login='$login'";
 $result = mysql_query($query);
 if (!$result) die('не могу подключиться к mySQl: '. mysql_error());
 $rows = mysql_num_rows($result);
 	if ($rows != 0) echo ("Имя пользователя ". $login ." существует<br />");
 		else {
-			$query = "INSERT INTO Users VALUES('$login', '$pass')";
+            $hashedpass = crypt($pass, $salt);
+			$query = "INSERT INTO Users VALUES('$preppedlogin', '$hashedpass')";
 			$result = mysql_query($query);
 	die(header("Location: thanks_for_registering.php"));
 			}
+        }
 echo <<<_END
 <!DOCTYPE html>
 <html>
@@ -35,4 +41,6 @@ echo <<<_END
 </body>
 </html>
 _END;
+
+
 ?>
