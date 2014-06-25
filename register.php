@@ -10,6 +10,9 @@ if ($login != "дефолтное значение" and $pass != "дефолтн
   or die('не могу подключиться к mySQl: '. mysql_error());
 mysql_select_db ($dbname) or die("Не могу выбрать БД $dbname: " . mysql_error());
 $preppedlogin = mysql_real_escape_string($login);
+$preppedpass = mysql_real_escape_string($pass);
+if (!preg_match("/[^(\w)|(\x7F-\xFF)]/",$preppedlogin)){
+    if (strlen($preppedpass)>=6){
 $query = "SELECT * FROM Users WHERE login='$login'";
 $result = mysql_query($query);
 if (!$result) die('не могу подключиться к mySQl: '. mysql_error());
@@ -20,7 +23,9 @@ $rows = mysql_num_rows($result);
 			$query = "INSERT INTO Users VALUES('$preppedlogin', '$hashedpass')";
 			$result = mysql_query($query);
 	die(header("Location: thanks_for_registering.php"));
-			}
+        }
+            }else{$error= "Пароль короче 6 символов";}
+			}else{$error = "Логин содержит недопустимые символы";}
         }
 echo <<<_END
 <!DOCTYPE html>
@@ -33,9 +38,12 @@ echo <<<_END
     <h1>Регистрация</h1>
     <form method="post" action="register.php">
         <p>введите логин и пароль для регистрации нового пользователя</p>
+        <p>Логин должен содержать только буквы, цифры и знак подчеркивания</p>
         <p>логин <input type="text" name="login"/></p>
         <p>пароль <input type="text" name="pass"/></p>
-        <p><input type="submit" value ="зарегистрироваться"/></p>       
+        <p style="color:red">$error</p>
+        <p><input type="submit" value ="зарегистрироваться"/></p> 
+
         
 </form>
 </body>
